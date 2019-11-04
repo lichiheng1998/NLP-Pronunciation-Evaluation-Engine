@@ -18,6 +18,7 @@ An acoustic score from the alignment phase
 An additional insertion and deletion score at the end of the feature vector for the word, which is identical to the first insertion/deletion score of the next word. 
 
 Training and results:
+
 Used non-standard PocketSphinx parameters with a frame rate of 65 per second, -topn value of 64.
 Used 4 features per phoneme described above with support vector machine classification routines from the Python Scikit-learn SVC library configured with a radial basis functional kernel and probability prediction. 
 Obtained 82% accuracy using DNN, 75% accuracy using linear logistic regression model.
