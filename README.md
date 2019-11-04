@@ -22,7 +22,8 @@ Produced each phoneme’s **duration** and the **logarithm of its acoustic score
 2. An acoustic score from the alignment phase
 3. [0, 1] score for substitution
 4. [0, 1] score with reductions after insertion/deletion detected
-5. An additional insertion and deletion score at the end of the feature vector for the word, which is identical to the first insertion/deletion score of the next word. 
+
+An additional insertion and deletion score at the end of the feature vector for the word, which is identical to the first insertion/deletion score of the next word. 
  
 ## Training and results:
 
