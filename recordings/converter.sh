@@ -15,30 +15,22 @@
 #
 # Author: benjgorman
 # http://benjgorman.com
-EXT=wav
+EXT=mp3
 DIRECTORY=converted
 if [ ! -d DIRECTORY ]; then
   mkdir $DIRECTORY
 fi
-
-for d in $(find audio -maxdepth 1 -type d)
-do
-  if [ ! -d ./$DIRECTORY/${d#*/} ]; then
-    mkdir ./$DIRECTORY/${d#*/}
-  fi
-  for i in $d/*; do
-    if [ "${i}" != "${i%.${EXT}}" ];then
-	
-        echo "Working on File $i"
-        sox -t wav "$i" -r 16000 "./$DIRECTORY/${i#*/}.raw"
-        if [ $? -eq 0 ]
-        then
-        echo "Successfully converted File: $i"
-        else
-        echo "File \"$i\" could not be converted. Aborting!"
-        exit 1
-        fi
-    fi  
-  done
-done
+for i in audios/*; do
+  if [ "${i}" != "${i%.${EXT}}" ];then
+    echo "Working on File $i"
+    sox "$i" -r 16000 "./$DIRECTORY/${i#*/}.raw"
+    if [ $? -eq 0 ]
+    then
+    echo "Successfully converted File: $i"
+    else
+    echo "File \"$i\" could not be converted. Aborting!"
+    exit 1
+    fi
+  fi  
+ done
 exit 0
