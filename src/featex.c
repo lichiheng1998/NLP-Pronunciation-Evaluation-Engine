@@ -3,7 +3,7 @@
 // by James Salsman, July-August 2017
 // released under the MIT open source license
 
-#define INFILENAME "featex.raw"
+// #define INFILENAME "featex.raw"
 #define FRATE 65
 #define MODELDIR "/usr/local/share/pocketsphinx/model/en-us/en-us"
 #define DICTNAME "combo.dict"
@@ -16,6 +16,8 @@
 
 #include <ctype.h>
 #include <math.h>
+
+char *INFILENAME = "featex.raw";
 
 int
 main(int argc, char *argv[])
@@ -47,7 +49,7 @@ main(int argc, char *argv[])
         int start, dur, cipid, score;
     } *algn;
 
-    if (argc < 2 || (*argv[1] == '-' && (*(argv[1]+1) != 'p' || argc < 3))) {
+    if (argc < 2) {
         fprintf(stderr, "usage: %s [-p[u][w][p][t][d]] word....\n"
             "-p: play [u]tterance, [w]ord(s), [p]honemes (default), "
             "[t]riphones, and/or [d]iphones.\n", argv[0]);
@@ -55,7 +57,11 @@ main(int argc, char *argv[])
     }
 
     play = 0; // by default play nothing
-    if (*argv[1] == '-' && *(argv[1]+1) == 'p') {
+
+    if (strcmp(argv[1], "-i") == 0) {
+        INFILENAME =  argv[2];
+        i = 3;
+    } else if (*argv[1] == '-' && *(argv[1]+1) == 'p') {
         play = 4; // just '-p' means to only play phonemes
         if (*(argv[1]+2)) {
             play = 0;
@@ -196,8 +202,8 @@ main(int argc, char *argv[])
         while (itor2) {
             ae = ps_alignment_iter_get(itor2);
             if (ae->start >= wend) break;
-            printf("%s: sub-phone '%s': %.2fs for %.2fs, score %d\n",argv[0], mdef->ciname[ae->id.pid.cipid], ae->start / frated,
-            ae->duration / frated, ae->score);
+            // fprintf("%s: sub-phone '%s': %.2fs for %.2fs, score %d\n",argv[0], mdef->ciname[ae->id.pid.cipid], ae->start / frated,
+            // ae->duration / frated, ae->score);
             fprintf(stderr, "%s: sub-phone '%s': %.2fs for %.2fs, score %d\n",
                 argv[0], mdef->ciname[ae->id.pid.cipid], ae->start / frated,
                 ae->duration / frated, ae->score);
@@ -241,9 +247,9 @@ main(int argc, char *argv[])
 
         if (i == n-1) goto lastdiphone;
 
-        if (i > 1) printf(" ");
+        // if (i > 1) printf(" ");
 
-        printf("%.2f %.3f", algn[i].dur / frated, 1 / log(2 - algn[i].score));
+        printf("%s %.2f %.3f ", mdef->ciname[algn[i].cipid], algn[i].dur / frated, 1 / log(2 - algn[i].score));
 
         memcpy(obuf + 8000, fbuf + algn[i-1].start * FPS,
                (algn[i-1].dur + algn[i].dur + algn[i+1].dur) * FPS);
@@ -343,7 +349,7 @@ main(int argc, char *argv[])
         // Calculate the substitution score
         //** SUBSTITUTION SCORE **
         fprintf(stderr, "%s: SUBSTITUTION: %.3f\n", argv[0], (42.0 - j) / 42.0);
-        printf(" %.3f", (42.0 - j) / 42.0);
+        printf("%.3f ", (42.0 - j) / 42.0);
 
         hash_table_empty(hyptbl);
 
@@ -462,12 +468,10 @@ main(int argc, char *argv[])
         }
         //** DELETE AND INSERTION SCORE **
         fprintf(stderr, "%s: INS/DEL: %.3f\n", argv[0], (160.0 - k) / 160);
-        printf(" %.3f %s ", (160.0 - k) / 160.0, mdef->ciname[algn[i].cipid]);
-
+        printf("%.3f", (160.0 - k) / 160.0);
+        printf("\n");
         hash_table_empty(hyptbl);
     }
-
-    printf("\n");
 
     free(obuf);
     free(algn);
